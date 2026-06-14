@@ -1,26 +1,96 @@
 <!DOCTYPE html>
-<html>
-<head><link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Scoreboard Display</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body class="obs-body">
-    <div id="scoreboard" class="scoreboard"></div>
-    <div id="ticker" class="ticker-bar"></div>
-    <audio id="bgMusic" loop></audio>
 
+    <!-- স্কোরবোর্ড মেইন কন্টেইনার -->
+    <div id="scoreboard" class="scoreboard">
+        <div class="score-box">
+            <!-- রান এবং উইকেট এখানে দেখাবে -->
+            <h1 id="score-display">0 / 0</h1>
+            <!-- ব্যাটসম্যানের নাম এখানে দেখাবে -->
+            <p id="batsman-display">Waiting for Match to Start...</p>
+        </div>
+        
+        <!-- ব্রেকিং নিউজ সেকশন -->
+        <div id="news-box" class="news-box" style="display: none;">
+            <p id="news-display"></p>
+        </div>
+    </div>
+
+    <!-- ফায়ারবেস রিয়েল-টাইম কানেকশন স্ক্রিপ্ট -->
     <script type="module">
-        import { db } from "./firebase-config.js";
+        import { db } from './firebase-config.js';
         import { ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-        
-        onValue(ref(db, 'liveScore'), (s) => {
-            let data = s.val();
-            document.getElementById('scoreboard').innerHTML = `${data.runs}-${data.wickets} | ${data.batsmanName}`;
-            document.getElementById('scoreboard').style.display = data.isVisible ? 'block' : 'none';
-        });
-        
-        onValue(ref(db, 'news'), (s) => { document.getElementById('ticker').innerText = s.val().text; });
-        
-        onValue(ref(db, 'audio'), (s) => {
-            let a = document.getElementById('bgMusic');
-            if(s.val().status === 'play') { a.src = s.val().src; a.play(); } else { a.pause(); }
+
+        // ডাটাবেজের মেইন নোড রেফারেন্স
+        const rootRef = ref(db, '/'); 
+
+        onValue(rootRef, (snapshot) => {
+            const data = snapshot.val();
+            
+            // 🔍 এখানে মেইন NULL CHECK যোগ করা হয়েছে
+            if (data !== null && data !== undefined) {
+                
+                // ১. রান এবং উইকেট আপডেট
+                const runs = data.runs !== undefined ? data.runs : 0;
+                const wickets = data.wickets !== undefined ? data.wickets : 0;
+                const scoreElement = document.getElementById('score-display');
+                if (scoreElement) {
+                    scoreElement.innerText = `${runs} / ${wickets}`;
+                }
+
+                // ২. ব্যাটসম্যানের নাম বা টেক্সট আপডেট
+                const batsmanElement = document.getElementById('batsman-display');
+                if (batsmanElement) {
+                    if (data.batsman !== undefined) {
+                        batsmanElement.innerText = `Batsman: ${data.batsman}`;
+                    } else if (data.text !== undefined) { 
+                        // আপনার কোডের পূর্ববর্তী 'text' প্রপার্টির ব্যাকআপ চেক
+                        batsmanElement.innerText = data.text;
+                    }
+                }
+
+                // ৩. ব্রেকিং নিউজ নোটিশ আপডেট
+                const newsElement = document.getElementById('news-display');
+                const newsBox = document.getElementById('news-box');
+                if (newsElement && newsBox) {
+                    if (data.news !== undefined && data.news !== "") {
+                        newsElement.innerText = data.news;
+                        newsBox.style.display = "block";
+                    } else {
+                        newsBox.style.display = "none";
+                    }
+                }
+
+                // ৪. স্কোরবোর্ড হাইড/শো (status চেক)
+                const scoreboard = document.getElementById('scoreboard');
+                if (scoreboard && data.status !== undefined) {
+                    if (data.status === "hide" || data.status === false) {
+                        scoreboard.style.display = "none";
+                    } else {
+                        scoreboard.style.display = "block";
+                    }
+                }
+
+            } else {
+                // ডাটাবেজ যদি সম্পূর্ণ খালি (Null) থাকে, তবে ডিফল্ট এই লেখাগুলো দেখাবে
+                console.log("ফায়ারবেস ডাটাবেজ খালি! কন্ট্রোল প্যানেল থেকে ইনপুট দেওয়ার অপেক্ষায়...");
+                
+                const scoreElement = document.getElementById('score-display');
+                if (scoreElement) scoreElement.innerText = "0 / 0";
+                
+                const batsmanElement = document.getElementById('batsman-display');
+                if (batsmanElement) batsmanElement.innerText = "Live Stream Starting Soon...";
+                
+                const newsBox = document.getElementById('news-box');
+                if (newsBox) newsBox.style.display = "none";
+            }
         });
     </script>
 </body>
