@@ -1,123 +1,98 @@
 import { db } from "./firebase-config.js";
 import { ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-// ১. অফলাইন ব্যাকআপ এবং প্রাথমিক ডেটা
-let matchData = JSON.parse(localStorage.getItem('cricketMatchData')) || {
-    runs: 0,
-    wickets: 0,
-    balls: 0,
-    history: [], // আনডু করার জন্য
-    batsmanImage: ""
+// স্টেট ম্যানেজমেন্ট এবং লোকাল ব্যাকআপ
+let matchState = JSON.parse(localStorage.getItem('cricketState')) || {
+    format: 'T20', runs: 0, wickets: 0, balls: 0, history: []
 };
 
-// ফায়ারবেস ও লোকাল স্টোরেজ একসাথে সিঙ্ক করা
+// ডেটা সিঙ্ক করা (লোকাল + ফায়ারবেস)
 function syncData() {
-    localStorage.setItem('cricketMatchData', JSON.stringify(matchData));
-    set(ref(db, 'liveScore'), matchData);
+    localStorage.setItem('cricketState', JSON.stringify(matchState));
+    set(ref(db, 'liveScore'), matchState);
+    updateAdminDisplay(); // অ্যাডমিন প্যানেলে স্কোর আপডেট করা
 }
 
-// হিস্ট্রি সেভ করার ফাংশন (Undo এর জন্য)
+// আনডু করার জন্য হিস্ট্রি সেভ করা
 function saveHistory() {
-    let currentState = JSON.parse(JSON.stringify(matchData));
+    let currentState = JSON.parse(JSON.stringify(matchState));
     delete currentState.history; 
-    matchData.history.push(currentState);
+    matchState.history.push(currentState);
 }
 
-// --- অ্যাডমিন প্যানেলের কাজ ---
+// অ্যাডমিন প্যানেলে প্রিভিউ দেখানো
+function updateAdminDisplay() {
+    const adminScoreText = document.getElementById("adminScoreText");
+    const adminOverText = document.getElementById("adminOverText");
+    
+    if (adminScoreText && adminOverText) {
+        adminScoreText.innerText = `${matchState.runs} - ${matchState.wickets}`;
+        let overs = Math.floor(matchState.balls / 6);
+        let ballsInOver = matchState.balls % 6;
+        adminOverText.innerText = `ওভার: ${overs}.${ballsInOver} | ফরম্যাট: ${matchState.format}`;
+    }
+}
 
-// রান যোগ করা
+// --- বাটন ফাংশনগুলো ---
+
+// ফরম্যাট চেঞ্জ করা
+window.changeFormat = function() {
+    saveHistory();
+    matchState.format = document.getElementById("matchFormat").value;
+    syncData();
+};
+
+// লিগ্যাল রান যোগ করা (বল কাউন্ট হবে)
 window.addRun = function(run) {
     saveHistory();
-    matchData.runs += run;
-    matchData.balls += 1;
+    matchState.runs += run;
+    matchState.balls += 1;
     syncData();
 };
 
-// উইকেট যোগ করা
+// উইকেট পড়া (বল কাউন্ট হবে)
 window.addWicket = function() {
     saveHistory();
-    matchData.wickets += 1;
-    matchData.balls += 1;
+    matchState.wickets += 1;
+    matchState.balls += 1;
     syncData();
 };
 
-// অতিরিক্ত রান (Wide/NoBall)
+// অতিরিক্ত রান (বল কাউন্ট হবে না)
 window.addExtra = function(type) {
     saveHistory();
-    matchData.runs += 1; 
-    // ওয়াইড বা নো বল ওভারের কাউন্টে যুক্ত হয় না
+    matchState.runs += 1; // ওয়াইড বা নো বলে ১ রান যোগ হয়
+    // *এখানে balls += 1 হবে না, কারণ এগুলো লিগ্যাল বল নয়*
     syncData();
 };
 
-// আনডু লজিক (ভুল সংশোধন)
+// ভুল সংশোধন (Undo)
 window.undoLast = function() {
-    if(matchData.history.length > 0) {
-        let previousState = matchData.history.pop();
-        matchData.runs = previousState.runs;
-        matchData.wickets = previousState.wickets;
-        matchData.balls = previousState.balls;
-        matchData.batsmanImage = previousState.batsmanImage;
+    if(matchState.history.length > 0) {
+        let previousState = matchState.history.pop();
+        matchState.format = previousState.format;
+        matchState.runs = previousState.runs;
+        matchState.wickets = previousState.wickets;
+        matchState.balls = previousState.balls;
+        
+        // ড্রপডাউনের ভ্যালুও আগেরটায় ফিরিয়ে নেওয়া
+        const formatSelect = document.getElementById("matchFormat");
+        if(formatSelect) formatSelect.value = matchState.format;
+        
         syncData();
     } else {
         alert("আর কোনো আগের রেকর্ড নেই!");
     }
 };
 
-// ম্যাচ রিসেট
+// নতুন ম্যাচ
 window.resetMatch = function() {
-    if(confirm("আপনি কি নিশ্চিত যে নতুন ম্যাচ শুরু করতে চান? সব ডেটা মুছে যাবে!")) {
-        matchData = { runs: 0, wickets: 0, balls: 0, history: [], batsmanImage: "" };
+    if(confirm("আপনি কি নিশ্চিত? সব ডেটা মুছে শূন্য হয়ে যাবে!")) {
+        matchState = { format: 'T20', runs: 0, wickets: 0, balls: 0, history: [] };
+        document.getElementById("matchFormat").value = 'T20';
         syncData();
     }
 };
 
-// ছবি আপলোড ও ম্যানেজমেন্ট
-const imageInput = document.getElementById('batsmanImage');
-if(imageInput) {
-    imageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if(file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const base64Img = event.target.result;
-                matchData.batsmanImage = base64Img;
-                
-                // অ্যাডমিন প্যানেলে প্রিভিউ দেখানো
-                const preview = document.getElementById('batsmanPreview');
-                preview.src = base64Img;
-                preview.style.display = "block";
-                
-                syncData(); // ফায়ারবেসে ছবি পাঠানো
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
-
-// --- OBS ডিসপ্লে സിঙ্ক (শুধু display.html-এ কাজ করবে) ---
-const scoreText = document.getElementById("scoreText");
-const overText = document.getElementById("overText");
-const obsBatsmanImg = document.getElementById("obsBatsmanImg");
-
-if (scoreText) { 
-    onValue(ref(db, 'liveScore'), (snapshot) => {
-        const data = snapshot.val();
-        if(data) {
-            // স্কোর দেখানো
-            scoreText.innerText = `${data.runs} - ${data.wickets}`;
-            
-            // ওভার হিসাব করা (৬ বলে ১ ওভার)
-            let overs = Math.floor(data.balls / 6);
-            let ballsInOver = data.balls % 6;
-            overText.innerText = `(${overs}.${ballsInOver})`;
-
-            // ছবি দেখানো
-            if(data.batsmanImage) {
-                obsBatsmanImg.src = data.batsmanImage;
-                obsBatsmanImg.style.display = "block";
-            } else {
-                obsBatsmanImg.style.display = "none";
-            }
-        }
-    });
-}
+// পেজ লোড হওয়ার সাথে সাথে অ্যাডমিন ডিসপ্লে আপডেট করা
+window.onload = updateAdminDisplay;
