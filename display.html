@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Live Score Display</title>
-    <style>
-        body { color: white; background: transparent; font-size: 50px; font-weight: bold; text-shadow: 2px 2px 5px black; }
-    </style>
+    <title>OBS Live Broadcast</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div id="score-display">স্কোর: --</div>
+<body class="obs-body">
+    <div class="scoreboard-tv">
+        <div class="team-score">
+            <span id="scoreText">0 - 0</span>
+            <span id="overText" class="overs">(0.0)</span>
+        </div>
+        <div class="player-info">
+            <img id="obsBatsmanImg" src="" alt="Player" style="display:none;">
+            <span id="batsmanName">Batsman</span>
+        </div>
+    </div>
     <script type="module" src="app.js"></script>
 </body>
 </html>
