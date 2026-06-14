@@ -1,34 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Panel - Step 4</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="admin-container">
-        <h1>Control Panel</h1>
+        <h1>Master Control Panel</h1>
+        <button onclick="addRun(4)">4 Runs</button>
+        <button onclick="addRun(6)">6 Runs</button>
+        <button onclick="addWicket()">Wicket</button>
         
-        <div class="player-management">
-            <h3>Player Settings</h3>
-            <input type="text" id="batsmanName" placeholder="Batsman Name">
-            <input type="file" id="batsmanImg" accept="image/*">
-            <button onclick="updatePlayer('batsman')">Update Batsman</button>
-            
-            <br><br>
-            
-            <input type="text" id="bowlerName" placeholder="Bowler Name">
-            <button onclick="updatePlayer('bowler')">Update Bowler</button>
-        </div>
-
         <hr>
-
-        <button onclick="toggleScoreboard()" class="extra">Show/Hide Scoreboard</button>
+        <input type="text" id="batsmanName" placeholder="Batsman">
+        <button onclick="updatePlayer('batsman')">Update</button>
         
-        <div class="score-controls" style="margin-top: 20px;">
-            <button onclick="addRun(4)">4 Runs</button>
-            <button onclick="addRun(6)">6 Runs</button>
-        </div>
+        <hr>
+        <input type="text" id="musicUrl" placeholder="Audio URL">
+        <button onclick="playMusic(document.getElementById('musicUrl').value)">Play Music</button>
+        <button onclick="stopMusic()">Stop</button>
+        <input type="text" id="tickerText" placeholder="Breaking News">
+        <button onclick="updateTicker(document.getElementById('tickerText').value)">Set News</button>
+        
+        <button onclick="toggleScoreboard()">Toggle Scoreboard</button>
     </div>
     <script type="module" src="app.js"></script>
 </body>
