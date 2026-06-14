@@ -1,0 +1,16 @@
+:root {
+    --primary-bg-color: #000000;
+    --primary-text-color: #ffffff;
+    --team1-color: #ff0000;
+    --team2-color: #0000ff;
+    --font-family: 'Arial', sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    background-color: var(--primary-bg-color);
+    color: var(--primary-text-color);
+}
