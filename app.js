@@ -1,8 +1,9 @@
 import { db } from "./firebase-config.js";
 import { ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
+// স্টেট ম্যানেজমেন্ট
 let matchState = JSON.parse(localStorage.getItem('matchState')) || {
-    runs: 0, wickets: 0, batsmanName: "Batsman", bowlerName: "Bowler", isVisible: true
+    runs: 0, wickets: 0, balls: 0, batsmanName: "Batsman", bowlerName: "Bowler", isVisible: true, history: []
 };
 
 function syncData() {
@@ -10,24 +11,38 @@ function syncData() {
     set(ref(db, 'liveScore'), matchState);
 }
 
-// নতুন ফিচার: প্লেয়ার আপডেট
-window.updatePlayer = function(type) {
-    if(type === 'batsman') {
-        matchState.batsmanName = document.getElementById('batsmanName').value;
-    } else {
-        matchState.bowlerName = document.getElementById('bowlerName').value;
-    }
+// স্কোরিং লজিক (আগেরগুলো এখানে আছে)
+window.addRun = function(run) {
+    matchState.runs += run;
+    matchState.balls += 1;
     syncData();
 };
 
-// নতুন ফিচার: শো/হাইড
+window.addWicket = function() {
+    matchState.wickets += 1;
+    matchState.balls += 1;
+    syncData();
+};
+
+// প্লেয়ার ও শো/হাইড লজিক
+window.updatePlayer = function(type) {
+    if(type === 'batsman') matchState.batsmanName = document.getElementById('batsmanName').value;
+    else matchState.bowlerName = document.getElementById('bowlerName').value;
+    syncData();
+};
+
 window.toggleScoreboard = function() {
     matchState.isVisible = !matchState.isVisible;
     syncData();
 };
 
-// রান আপডেট লজিক (আগেরগুলোও এখানে থাকবে)
-window.addRun = function(run) {
-    matchState.runs += run;
-    syncData();
+// অডিও ও টিকার লজিক
+window.playMusic = function(url) {
+    set(ref(db, 'audio'), { src: url, status: 'play' });
+};
+window.stopMusic = function() {
+    set(ref(db, 'audio'), { status: 'stop' });
+};
+window.updateTicker = function(text) {
+    set(ref(db, 'news'), { text: text });
 };
