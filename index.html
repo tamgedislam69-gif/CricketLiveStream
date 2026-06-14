@@ -1,17 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Control Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Admin Panel</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="admin-container">
-        <h1>Control Panel</h1>
-        <button onclick="updateScore('4')">৪ রান</button>
-        <button onclick="updateScore('6')">৬ রান</button>
+        <div class="header">
+            <h1>🎛️ কন্ট্রোল প্যানেল</h1>
+            <button class="settings-btn" onclick="alert('সেটিংস প্যানেল শীঘ্রই আসছে!')">⚙️ সেটিংস</button>
+        </div>
+
+        <div class="format-selection">
+            <label><b>খেলার ফরম্যাট:</b></label>
+            <select id="matchFormat">
+                <option value="T20">টি-টোয়েন্টি (T20)</option>
+                <option value="ODI">ওয়ানডে (ODI)</option>
+                <option value="Test">টেস্ট (Test)</option>
+            </select>
+        </div>
+
+        <hr>
+
+        <div class="score-controls">
+            <h2>স্কোর আপডেট</h2>
+            <div class="run-buttons">
+                <button onclick="addRun(1)">১ রান</button>
+                <button onclick="addRun(2)">২ রান</button>
+                <button onclick="addRun(3)">৩ রান</button>
+                <button onclick="addRun(4)" class="boundary">৪ রান</button>
+                <button onclick="addRun(6)" class="sixer">৬ রান</button>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="danger" onclick="addWicket()">উইকেট (W)</button>
+                <button class="extra" onclick="addExtra('Wide')">ওয়াইড (WD)</button>
+                <button class="extra" onclick="addExtra('NoBall')">নো বল (NB)</button>
+            </div>
+
+            <button class="undo" onclick="undoLast()">↩️ Undo (ভুল সংশোধন)</button>
+            <button class="danger" onclick="resetMatch()" style="width: 100%; margin-top: 15px;">নতুন ম্যাচ শুরু করুন</button>
+        </div>
+
+        <hr>
+
+        <div class="player-management">
+            <h2>প্লেয়ার ম্যানেজমেন্ট</h2>
+            <div class="image-upload-box">
+                <p>ব্যাটসম্যানের ছবি সিলেক্ট করুন</p>
+                <input type="file" id="batsmanImage" accept="image/*">
+                <br><br>
+                <img id="batsmanPreview" src="" alt="প্রিভিউ" style="display:none;">
+            </div>
+        </div>
     </div>
     <script type="module" src="app.js"></script>
 </body>
 </html>
-
