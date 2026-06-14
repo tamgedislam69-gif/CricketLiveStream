@@ -1,5 +1,38 @@
-body { font-family: Arial, sans-serif; text-align: center; }
-.admin-container { margin-top: 50px; }
-button { padding: 20px 40px; font-size: 24px; cursor: pointer; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; }
-button:hover { background: #0056b3; }
+/* গ্লোবাল ভেরিয়েবল (কালার চেঞ্জ করার জন্য) */
+:root {
+    --primary-color: #004aad;
+    --danger-color: #ff3333;
+    --extra-color: #ffcc00;
+    --bg-color: #f4f6f9;
+}
 
+/* --- Admin Panel Styles --- */
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); margin: 0; padding: 20px; }
+.admin-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.header { display: flex; justify-content: space-between; align-items: center; }
+.settings-btn { background: #333; color: white; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
+
+button { padding: 12px 18px; font-size: 16px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; background: var(--primary-color); color: white; transition: 0.3s; font-weight: bold; }
+button:hover { opacity: 0.8; transform: scale(1.05); }
+
+.boundary { background: #28a745; }
+.sixer { background: #6f42c1; }
+.danger { background: var(--danger-color); }
+.extra { background: var(--extra-color); color: #333; }
+.undo { background: #6c757d; width: 100%; margin-top: 10px; }
+
+hr { border: 1px solid #eee; margin: 25px 0; }
+
+.image-upload-box { border: 2px dashed #bbb; padding: 30px; text-align: center; border-radius: 10px; background: #fdfdfd; }
+#batsmanPreview { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid var(--primary-color); margin-top: 15px; }
+
+/* --- OBS Display Styles --- */
+.obs-body { background: transparent; color: white; display: flex; align-items: flex-end; justify-content: center; height: 100vh; overflow: hidden; margin: 0; padding-bottom: 50px; }
+.scoreboard-tv { background: linear-gradient(135deg, #001f3f 0%, #004aad 100%); padding: 15px 40px; border-radius: 20px; display: flex; align-items: center; gap: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.7); border: 2px solid #ffcc00; animation: slideUp 1.2s cubic-bezier(0.25, 1, 0.5, 1); }
+.team-score { font-size: 60px; font-weight: 900; letter-spacing: 2px; }
+.overs { font-size: 28px; color: #ffcc00; margin-left: 10px; font-weight: normal; }
+.player-info { display: flex; align-items: center; gap: 15px; font-size: 28px; background: rgba(0,0,0,0.4); padding: 8px 20px; border-radius: 15px; }
+.player-info img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
+
+/* টিভি অ্যানিমেশন */
+@keyframes slideUp { from { transform: translateY(150%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
