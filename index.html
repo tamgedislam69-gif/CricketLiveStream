@@ -2,31 +2,38 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Admin Panel</title>
+    <title>Professional Cricket Admin</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* অ্যাডমিন প্যানেলের নিজস্ব স্কোরবোর্ড ডিজাইন */
+        .admin-live-score { background: #001f3f; color: white; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; border: 2px solid #ffcc00; }
+        .admin-live-score h2 { margin: 0; font-size: 32px; }
+        .admin-live-score p { margin: 5px 0 0; font-size: 18px; color: #ffcc00; }
+    </style>
 </head>
 <body>
     <div class="admin-container">
-        <div class="header">
-            <h1>🎛️ কন্ট্রোল প্যানেল</h1>
-            <button class="settings-btn" onclick="alert('সেটিংস প্যানেল শীঘ্রই আসছে!')">⚙️ সেটিংস</button>
+        <h1>কন্ট্রোল প্যানেল (ধাপ ৩)</h1>
+
+        <div class="admin-live-score">
+            <h2 id="adminScoreText">0 - 0</h2>
+            <p id="adminOverText">ওভার: 0.0</p>
         </div>
 
         <div class="format-selection">
             <label><b>খেলার ফরম্যাট:</b></label>
-            <select id="matchFormat">
+            <select id="matchFormat" onchange="changeFormat()">
                 <option value="T20">টি-টোয়েন্টি (T20)</option>
                 <option value="ODI">ওয়ানডে (ODI)</option>
                 <option value="Test">টেস্ট (Test)</option>
             </select>
         </div>
-
         <hr>
 
         <div class="score-controls">
-            <h2>স্কোর আপডেট</h2>
+            <h3>রান যোগ করুন</h3>
             <div class="run-buttons">
+                <button onclick="addRun(0)">০ (ডট)</button>
                 <button onclick="addRun(1)">১ রান</button>
                 <button onclick="addRun(2)">২ রান</button>
                 <button onclick="addRun(3)">৩ রান</button>
@@ -34,28 +41,21 @@
                 <button onclick="addRun(6)" class="sixer">৬ রান</button>
             </div>
             
+            <h3 style="margin-top: 15px;">উইকেট ও অতিরিক্ত রান</h3>
             <div class="action-buttons">
                 <button class="danger" onclick="addWicket()">উইকেট (W)</button>
                 <button class="extra" onclick="addExtra('Wide')">ওয়াইড (WD)</button>
                 <button class="extra" onclick="addExtra('NoBall')">নো বল (NB)</button>
             </div>
 
-            <button class="undo" onclick="undoLast()">↩️ Undo (ভুল সংশোধন)</button>
-            <button class="danger" onclick="resetMatch()" style="width: 100%; margin-top: 15px;">নতুন ম্যাচ শুরু করুন</button>
-        </div>
-
-        <hr>
-
-        <div class="player-management">
-            <h2>প্লেয়ার ম্যানেজমেন্ট</h2>
-            <div class="image-upload-box">
-                <p>ব্যাটসম্যানের ছবি সিলেক্ট করুন</p>
-                <input type="file" id="batsmanImage" accept="image/*">
-                <br><br>
-                <img id="batsmanPreview" src="" alt="প্রিভিউ" style="display:none;">
-            </div>
+            <hr>
+            <button class="undo" onclick="undoLast()">↩️ Undo (শেষ বল মুছুন)</button>
+            <button class="danger" onclick="resetMatch()" style="width: 100%; margin-top: 10px;">নতুন ম্যাচ শুরু করুন</button>
         </div>
     </div>
     <script type="module" src="app.js"></script>
 </body>
 </html>
+
+
+        
