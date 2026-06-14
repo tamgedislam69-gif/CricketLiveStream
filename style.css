@@ -1,16 +1,5 @@
-:root {
-    --primary-bg-color: #000000;
-    --primary-text-color: #ffffff;
-    --team1-color: #ff0000;
-    --team2-color: #0000ff;
-    --font-family: 'Arial', sans-serif;
-}
+body { font-family: Arial, sans-serif; text-align: center; }
+.admin-container { margin-top: 50px; }
+button { padding: 20px 40px; font-size: 24px; cursor: pointer; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; }
+button:hover { background: #0056b3; }
 
-body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: var(--font-family);
-    background-color: var(--primary-bg-color);
-    color: var(--primary-text-color);
-}
