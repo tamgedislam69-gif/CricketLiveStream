@@ -1,21 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>OBS Live Broadcast</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
 <body class="obs-body">
-    <div class="scoreboard-tv">
-        <div class="team-score">
-            <span id="scoreText">0 - 0</span>
-            <span id="overText" class="overs">(0.0)</span>
-        </div>
-        <div class="player-info">
-            <img id="obsBatsmanImg" src="" alt="Player" style="display:none;">
-            <span id="batsmanName">Batsman</span>
-        </div>
-    </div>
-    <script type="module" src="app.js"></script>
+    <div id="scoreboard" class="scoreboard"></div>
+    <div id="ticker" class="ticker-bar"></div>
+    <audio id="bgMusic" loop></audio>
+
+    <script type="module">
+        import { db } from "./firebase-config.js";
+        import { ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        
+        onValue(ref(db, 'liveScore'), (s) => {
+            let data = s.val();
+            document.getElementById('scoreboard').innerHTML = `${data.runs}-${data.wickets} | ${data.batsmanName}`;
+            document.getElementById('scoreboard').style.display = data.isVisible ? 'block' : 'none';
+        });
+        
+        onValue(ref(db, 'news'), (s) => { document.getElementById('ticker').innerText = s.val().text; });
+        
+        onValue(ref(db, 'audio'), (s) => {
+            let a = document.getElementById('bgMusic');
+            if(s.val().status === 'play') { a.src = s.val().src; a.play(); } else { a.pause(); }
+        });
+    </script>
 </body>
 </html>
